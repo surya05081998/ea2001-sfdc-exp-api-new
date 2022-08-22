@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="ea2001-sfdc-httpListenerConfig">
+        <http:listener-connection host="${http.listener.host}" port="${http.listener.port}" protocol="${http.listener.protocol}"/>
+    </http:listener-config>
+    <apikit:config name="ea2001-sfdc-config" api="resource::0cfa0116-cb9a-43a3-8e65-48d817d60af9:ea2001-sfdc:1.0.1:raml:zip:ea2001-sfdc.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+  <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="5d270563-97f3-4c60-a22c-38bea21ef223" basePath="${sa1001.basePath}" >
+		<http:request-connection host="${sa1001.host}" port="${sa1001.port}"/>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="623ce294-883a-41e7-8804-5f89b0a2697a" file="properties\mule-${env}.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="a1818a7a-7124-4a27-a4e8-c25cb89e25bb" file="properties\mule-common.properties" />
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c3891e75-3a1f-4140-913e-70306b166998" flowRef="ea2001-sfdc-main" />
+</mule>

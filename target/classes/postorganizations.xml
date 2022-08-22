@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="postorganizationsSubFlow" doc:id="2ea15527-8389-436f-ba73-afa3aa4b96c1" >
+		<logger level="INFO" doc:name="Info: postorganizations flow start  Logger" doc:id="7978c25e-656f-47fb-a96d-2b41d684f737" message="postorganizations flow started"/>
+		<ee:transform doc:name="Transforming EXP API payload to SYS API payload" doc:id="28aa92d9-0712-4be0-a654-2320d583b69b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "name": payload.Organization.orgName,
+  "sfdcId": payload.Organization.orgId,
+  "acctStatus": if(payload.Organization.status == 1) "Active"  else "Inactive",
+  "timeZone": payload.Organization.timeZone,
+  "address1": payload.Organization.primaryAddress1,
+  "address2": payload.Organization.primaryAddress2,
+  "address3": payload.Organization.primaryAddress3,
+  "city": payload.Organization.city,
+  "state": payload.Organization.state,
+  "status": if(payload.Organization.status == 1) "Active"  else "Inactive",
+  "postalCode": payload.Organization.postalCode,
+  "country": payload.Organization.country,
+  "activeContracts": if(payload.Organization.activeContracts == "Y") true  else false
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="af801438-e564-4c01-a060-c5af361afbf9" config-ref="HTTP_Request_configuration" path="${sa1001.path}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	client_secret : p('sa1001.client_secret'),
+	client_id : p('sa1001.client_id')
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="8124e51e-94df-4bb6-a40c-a1b6bd207412" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Info: postorganizations flow end Logger" doc:id="2ec33692-cdb4-4a5f-85d6-95eb15c69c82" message="postorganizations flow ended"/>
+	</sub-flow>
+</mule>
